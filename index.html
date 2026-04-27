@@ -2,83 +2,141 @@
 <html lang="hu">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Freelance OS</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freelance Parancsnoki Központ</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --primary: #38bdf8;
+            --success: #22c55e;
+            --target: #ef4444;
+            --text: #f8fafc;
+        }
+        body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
+        .card { background: var(--card); padding: 20px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        h1, h2 { margin: 0 0 15px 0; font-size: 1.2rem; color: var(--primary); }
+        .big-num { font-size: 1.5rem; font-weight: bold; }
+        
+        /* Grafikon */
+        .chart-container { height: 200px; display: flex; align-items: flex-end; gap: 10px; border-bottom: 2px solid #475569; position: relative; padding-top: 20px; }
+        .bar { background: var(--primary); flex: 1; transition: height 0.3s; position: relative; border-radius: 4px 4px 0 0; }
+        .target-line { position: absolute; width: 100%; border-top: 2px dashed var(--target); z-index: 10; pointer-events: none; }
+        .bar-label { position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; }
+
+        /* Lista */
+        .invoice-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #334155; }
+        .checkbox { width: 25px; height: 25px; border-radius: 5px; border: 2px solid var(--primary); cursor: pointer; }
+        .checked { background: var(--success); border-color: var(--success); }
+        
+        #login-screen { position: fixed; inset: 0; background: var(--bg); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        input { padding: 10px; border-radius: 5px; border: none; margin-bottom: 10px; }
+        .hidden { display: none; }
+    </style>
 </head>
-<body class="bg-slate-900 min-h-screen font-sans">
-    <div id="login-screen" class="flex items-center justify-center min-h-screen p-6">
-        <div class="bg-white p-8 rounded-[40px] shadow-2xl w-full max-w-sm text-center">
-            <h1 class="text-3xl font-black italic tracking-tighter text-slate-800 mb-2 font-sans">FREEOS.</h1>
-            <input type="password" id="pass" class="w-full p-4 rounded-2xl border-2 border-slate-100 text-center text-xl outline-none focus:border-indigo-500 mb-4 font-sans" placeholder="••••">
-            <button onclick="check()" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold uppercase tracking-widest shadow-lg">Belépés</button>
-            <p id="err" class="text-red-500 text-xs mt-4 hidden font-bold">HIBÁS KÓD</p>
+<body>
+
+<div id="login-screen">
+    <h2>Belépés</h2>
+    <input type="password" id="pass" placeholder="Kód...">
+    <button onclick="login()" style="padding: 10px 20px; border-radius: 5px; background: var(--primary); border: none;">Indítás</button>
+</div>
+
+<div id="app" class="hidden">
+    <h1>🚀 Freelance Dashboard</h1>
+    
+    <div class="grid">
+        <div class="card">
+            <h2>Bruttó Összesen</h2>
+            <div class="big-num" id="total-gross">10 176 939 Ft</div>
+        </div>
+        <div class="card">
+            <h2>Zsebben (Nettó)</h2>
+            <div class="big-num" id="total-net" style="color: var(--success);">0 Ft</div>
         </div>
     </div>
 
-    <div id="main-screen" class="hidden bg-slate-50 min-h-screen w-full p-4 overflow-y-auto font-sans">
-        <div class="max-w-md mx-auto py-6">
-            <div class="flex justify-between items-center mb-8 px-2 text-slate-900">
-                <h2 class="text-2xl font-black italic tracking-tighter text-indigo-900">FREEOS.</h2>
-                <button onclick="logout()" class="text-[10px] font-bold text-slate-300 uppercase">Kilépés</button>
-            </div>
-            
-            <div class="space-y-4 mb-8">
-                <div class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Összes Bruttó</p>
-                    <p class="text-3xl font-black text-slate-900">10 176 939 Ft</p>
-                </div>
-                <div class="bg-indigo-600 p-6 rounded-[32px] shadow-xl text-white">
-                    <p class="text-indigo-200 text-[10px] font-bold uppercase mb-1">Bankban (EKHO Nettó)</p>
-                    <p class="text-3xl font-black tracking-tight">8 140 398 Ft</p>
-                    <p class="text-[9px] text-indigo-300 mt-2 font-medium italic">Adók és fixek levonva</p>
-                </div>
-            </div>
-
-            <div id="list" class="space-y-3 mb-8"></div>
-        </div>
+    <div class="card">
+        <h2>A Hajsza (Cél: 2M/hó)</h2>
+        <div class="chart-container" id="chart">
+            <div class="target-line" style="bottom: 80px;"></div> </div>
     </div>
 
-    <script>
-        const P = "2026FreeLanceD";
-        const inv = [
-            {id: 'E-2026-1', a: 3304125}, {id: 'E-2026-2', a: 4322200},
-            {id: 'E-2026-5', a: 1706628}, {id: 'E-2026-6', a: 843986}
-        ];
+    <div class="card">
+        <h2>Számlák</h2>
+        <div id="invoice-list"></div>
+    </div>
+</div>
 
-        function check() {
-            if(document.getElementById('pass').value === P) {
-                localStorage.setItem('auth', '1');
-                render();
-            } else { document.getElementById('err').classList.remove('hidden'); }
-        }
+<script>
+    const passCode = "2026FreeLanceD";
+    const monthlyTarget = 2000000;
+    const fixedTax = 50000; // Példa havi fix adó
 
-        function logout() { localStorage.clear(); location.reload(); }
+    const invoices = [
+        { id: "E-2026-1", partner: "Future Deluxe", gross: 3304125, month: 0, paid: false },
+        { id: "E-2026-2", partner: "Future Deluxe", gross: 4322200, month: 2, paid: false },
+        { id: "E-2026-5", partner: "OZ Club", gross: 1706628, month: 2, paid: false },
+        { id: "E-2026-6", partner: "OZ Club", gross: 843986, month: 3, paid: false }
+    ];
 
-        function toggle(id) {
-            const v = localStorage.getItem('p_'+id) === '1' ? '0' : '1';
-            localStorage.setItem('p_'+id, v);
-            render();
-        }
-
-        function render() {
-            if(localStorage.getItem('auth') !== '1') return;
+    function login() {
+        if(document.getElementById('pass').value === passCode) {
             document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('main-screen').classList.remove('hidden');
-            document.body.className = "bg-slate-50";
-
-            const container = document.getElementById('list');
-            container.innerHTML = '<h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 px-3">Számlák</h3>';
-            
-            inv.forEach(i => {
-                const isP = localStorage.getItem('p_'+i.id) === '1';
-                const d = document.createElement('div');
-                d.className = `p-4 rounded-[24px] border flex justify-between items-center bg-white ${isP ? 'border-green-100 shadow-sm' : 'border-slate-50 opacity-60'}`;
-                d.innerHTML = `<div><p class="text-[9px] font-bold text-slate-400 font-sans">${i.id}</p><p class="font-bold text-slate-800 font-sans">${i.a.toLocaleString()} Ft</p></div><button onclick="toggle('${i.id}')" class="w-10 h-10 rounded-2xl flex items-center justify-center ${isP ? 'bg-green-500 text-white' : 'bg-slate-50 text-slate-200'}">${isP ? '✓' : ''}</button>`;
-                container.appendChild(d);
-            });
+            document.getElementById('app').classList.remove('hidden');
+            renderApp();
         }
-        render();
-    </script>
+    }
+
+    function calculateNet(gross) {
+        if (gross === 0) return 0;
+        return (gross - fixedTax) * 0.85; // 15% EKHO levonás
+    }
+
+    function renderApp() {
+        const list = document.getElementById('invoice-list');
+        const chart = document.getElementById('chart');
+        let totalNet = 0;
+        let monthlyTotals = [0, 0, 0, 0]; // Jan, Feb, Mar, Apr
+
+        list.innerHTML = '';
+        invoices.forEach((inv, index) => {
+            if(inv.paid) totalNet += calculateNet(inv.gross);
+            monthlyTotals[inv.month] += inv.gross;
+
+            const div = document.createElement('div');
+            div.className = 'invoice-item';
+            div.innerHTML = `
+                <div>
+                    <strong>${inv.id}</strong><br>
+                    <small>${inv.partner} - ${inv.gross.toLocaleString()} Ft</small>
+                </div>
+                <div class="checkbox ${inv.paid ? 'checked' : ''}" onclick="togglePaid(${index})"></div>
+            `;
+            list.appendChild(div);
+        });
+
+        document.getElementById('total-net').innerText = Math.round(totalNet).toLocaleString() + ' Ft';
+        
+        // Grafikon frissítés
+        const months = ['Jan', 'Feb', 'Már', 'Ápr'];
+        chart.innerHTML = '<div class="target-line" style="bottom: 80px;"></div>';
+        monthlyTotals.forEach((total, i) => {
+            const height = (total / 5000000) * 180; // Arányosítás (5M a max magasság)
+            const bar = document.createElement('div');
+            bar.className = 'bar';
+            bar.style.height = `${Math.min(height, 200)}px`;
+            bar.innerHTML = `<span class="bar-label">${months[i]}</span>`;
+            chart.appendChild(bar);
+        });
+    }
+
+    function togglePaid(index) {
+        invoices[index].paid = !invoices[index].paid;
+        renderApp();
+    }
+</script>
 </body>
 </html>
