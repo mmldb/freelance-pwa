@@ -2,163 +2,127 @@
 <html lang="hu">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Freelance Parancsnoki Központ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freelance HQ 2026</title>
     <style>
-        :root {
-            --bg: #0f172a;
-            --card: #1e293b;
-            --primary: #38bdf8;
-            --success: #22c55e;
-            --target: #ef4444;
-            --text: #f8fafc;
-        }
-        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
-        .card { background: var(--card); padding: 20px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3); }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        h1, h2 { margin: 0 0 15px 0; font-size: 1.1rem; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; }
-        .big-num { font-size: 1.3rem; font-weight: bold; }
+        :root { --bg: #0f172a; --card: #1e293b; --blue: #38bdf8; --green: #22c55e; --red: #ef4444; --text: #f8fafc; }
+        body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
+        .card { background: var(--card); padding: 15px; border-radius: 12px; margin-bottom: 15px; }
+        h1, h2 { margin: 0 0 10px 0; font-size: 1rem; color: var(--blue); }
+        .big { font-size: 1.4rem; font-weight: bold; }
         
         /* Grafikon */
-        .chart-container { height: 180px; display: flex; align-items: flex-end; gap: 12px; border-bottom: 2px solid #475569; position: relative; padding-top: 30px; margin-top: 10px; }
-        .bar { background: var(--primary); flex: 1; transition: height 0.5s ease; position: relative; border-radius: 6px 6px 0 0; min-height: 5px; }
-        .bar.over-target { background: var(--success); }
-        .target-line { position: absolute; width: 100%; border-top: 2px dashed var(--target); z-index: 10; opacity: 0.7; }
-        .target-label { position: absolute; right: 0; top: -20px; color: var(--target); font-size: 0.7rem; font-weight: bold; }
-        .bar-label { position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; opacity: 0.8; }
+        .chart { height: 150px; display: flex; align-items: flex-end; gap: 8px; border-bottom: 2px solid #475569; position: relative; padding-top: 30px; }
+        .bar { background: var(--blue); flex: 1; position: relative; border-radius: 4px 4px 0 0; min-height: 2px; }
+        .bar.goal { background: var(--green); }
+        .line { position: absolute; width: 100%; border-top: 2px dashed var(--red); opacity: 0.6; z-index: 5; }
+        .label { position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; }
 
         /* Lista */
-        .invoice-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #334155; }
-        .checkbox { width: 28px; height: 28px; border-radius: 8px; border: 2px solid var(--primary); cursor: pointer; transition: 0.2s; flex-shrink: 0; }
-        .checked { background: var(--success); border-color: var(--success); position: relative; }
-        .checked::after { content: '✓'; color: white; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+        .item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #334155; }
+        .box { width: 30px; height: 30px; border: 2px solid var(--blue); border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .done { background: var(--green); border-color: var(--green); }
         
-        #login-screen { position: fixed; inset: 0; background: var(--bg); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-        input { padding: 15px; border-radius: 10px; border: 2px solid var(--card); background: #1e293b; color: white; margin-bottom: 15px; width: 80%; max-width: 300px; font-size: 1rem; text-align: center; }
-        button { padding: 15px 40px; border-radius: 10px; background: var(--primary); border: none; color: #0f172a; font-weight: bold; font-size: 1rem; cursor: pointer; }
-        .hidden { display: none; }
+        #login { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; }
+        input { padding: 12px; border-radius: 8px; border: none; margin-bottom: 10px; text-align: center; width: 200px; }
+        button { padding: 12px 30px; border-radius: 8px; background: var(--blue); border: none; font-weight: bold; cursor: pointer; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-<div id="login-screen">
-    <h1 style="color: white; margin-bottom: 30px;">FREE-D-CENTER 2026</h1>
-    <input type="password" id="pass" placeholder="PIN KÓD" autofocus>
-    <button id="login-btn">BELÉPÉS</button>
+<div id="login">
+    <h1>BELÉPÉS</h1>
+    <input type="password" id="pw" placeholder="Kód...">
+    <button onclick="check()">INDÍTÁS</button>
 </div>
 
-<div id="app" class="hidden">
-    <h2>📊 Pénzügyi Állapot</h2>
-    <div class="grid">
-        <div class="card">
-            <h2>Bruttó (2026)</h2>
-            <div class="big-num" id="total-gross">0 Ft</div>
+<div id="main" class="hidden">
+    <div style="display: flex; gap: 10px;">
+        <div class="card" style="flex: 1;">
+            <h2>Bruttó</h2>
+            <div id="total-g" class="big">0 Ft</div>
         </div>
-        <div class="card" style="border: 1px solid var(--success);">
+        <div class="card" style="flex: 1;">
             <h2>EKHO Nettó</h2>
-            <div class="big-num" id="total-net" style="color: var(--success);">0 Ft</div>
+            <div id="total-n" class="big" style="color: var(--green);">0 Ft</div>
         </div>
     </div>
 
     <div class="card">
-        <h2>A Hajsza (Cél: 2M / hó)</h2>
-        <div class="chart-container" id="chart">
-            </div>
+        <h2>A HAJSZA (2M/hó)</h2>
+        <div class="chart" id="chart"></div>
     </div>
 
     <div class="card">
-        <h2>Számlák Kezelése</h2>
-        <div id="invoice-list"></div>
+        <h2>SZÁMLÁK</h2>
+        <div id="list"></div>
     </div>
 </div>
 
 <script>
-    const passCode = "2026FreeLanceD";
-    const monthlyTarget = 2000000;
-    const fixedTax = 50000;
+    const KEY = "2026freelanced";
+    const TARGET = 2000000;
 
-    // Adatok a dokumentumok alapján 
-    const invoices = [
-        { id: "E-2026-1", partner: "Future Deluxe", gross: 3304125, month: 0, paid: true },
-        { id: "E-2026-2", partner: "Future Deluxe", gross: 4322200, month: 2, paid: false },
-        { id: "E-2026-5", partner: "OZ Club", gross: 1706628, month: 2, paid: false },
-        { id: "E-2026-6", partner: "OZ Club", gross: 843986, month: 3, paid: false }
+    // Adatok az elküldött számláid alapján
+    const data = [
+        { id: "E-2026-1", p: "Future Deluxe", v: 3304125, m: 0, paid: true },
+        { id: "E-2026-2", p: "Future Deluxe", v: 4322200, m: 2, paid: false },
+        { id: "E-2026-5", p: "OZ Club", v: 1706628, m: 2, paid: false },
+        { id: "E-2026-6", p: "OZ Club", v: 843986, m: 3, paid: false }
     ];
 
-    // Login kezelés
-    const loginBtn = document.getElementById('login-btn');
-    const passInput = document.getElementById('pass');
-
-    function attemptLogin() {
-        if(passInput.value === passCode) {
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('app').classList.remove('hidden');
-            renderApp();
+    function check() {
+        const val = document.getElementById('pw').value.toLowerCase();
+        if(val === KEY) {
+            document.getElementById('login').classList.add('hidden');
+            document.getElementById('main').classList.remove('hidden');
+            draw();
         } else {
             alert("Hibás kód!");
-            passInput.value = "";
         }
     }
 
-    loginBtn.addEventListener('click', attemptLogin);
-    passInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') attemptLogin(); });
+    // Enter gomb figyelése
+    document.getElementById('pw').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') check();
+    });
 
-    function calculateNet(gross) {
-        return (gross - fixedTax) * 0.85;
-    }
-
-    function renderApp() {
-        const list = document.getElementById('invoice-list');
+    function draw() {
+        const list = document.getElementById('list');
         const chart = document.getElementById('chart');
-        let totalGrossVal = 0;
-        let totalNetVal = 0;
-        let monthlyTotals = [0, 0, 0, 0]; // Jan, Feb, Már, Ápr
+        let gross = 0, net = 0, monthly = [0, 0, 0, 0];
 
         list.innerHTML = '';
-        invoices.forEach((inv, index) => {
-            totalGrossVal += inv.gross;
-            if(inv.paid) totalNetVal += calculateNet(inv.gross);
-            monthlyTotals[inv.month] += inv.gross;
+        data.forEach((inv, i) => {
+            gross += inv.v;
+            monthly[inv.m] += inv.v;
+            if(inv.paid) net += (inv.v - 50000) * 0.85;
 
-            const div = document.createElement('div');
-            div.className = 'invoice-item';
-            div.innerHTML = `
-                <div>
-                    <strong>${inv.id}</strong><br>
-                    <small>${inv.partner} • ${inv.gross.toLocaleString()} Ft</small>
-                </div>
-                <div class="checkbox ${inv.paid ? 'checked' : ''}" onclick="togglePaid(${index})"></div>
-            `;
-            list.appendChild(div);
+            list.innerHTML += `
+                <div class="item">
+                    <div><strong>${inv.id}</strong><br><small>${inv.v.toLocaleString()} Ft</small></div>
+                    <div class="box ${inv.paid ? 'done' : ''}" onclick="toggle(${i})">${inv.paid ? '✓' : ''}</div>
+                </div>`;
         });
 
-        document.getElementById('total-gross').innerText = totalGrossVal.toLocaleString() + ' Ft';
-        document.getElementById('total-net').innerText = Math.round(totalNetVal).toLocaleString() + ' Ft';
-        
-        // Grafikon rajzolás
+        document.getElementById('total-g').innerText = gross.toLocaleString() + ' Ft';
+        document.getElementById('total-n').innerText = Math.round(net).toLocaleString() + ' Ft';
+
         const months = ['Jan', 'Feb', 'Már', 'Ápr'];
-        const maxDisplay = 7000000; // Mi legyen a grafikon teteje
-        const targetPos = (monthlyTarget / maxDisplay) * 180;
-
-        chart.innerHTML = `
-            <div class="target-line" style="bottom: ${targetPos}px;">
-                <span class="target-label">2M CÉL</span>
-            </div>
-        `;
-
-        monthlyTotals.forEach((total, i) => {
-            const height = (total / maxDisplay) * 180;
-            const bar = document.createElement('div');
-            bar.className = 'bar' + (total >= monthlyTarget ? ' over-target' : '');
-            bar.style.height = `${Math.max(height, 5)}px`;
-            bar.innerHTML = `<span class="bar-label">${months[i]}</span>`;
-            chart.appendChild(bar);
+        const max = 6000000; 
+        chart.innerHTML = `<div class="line" style="bottom: ${(TARGET/max)*150}px"></div>`;
+        
+        monthly.forEach((val, i) => {
+            const h = (val / max) * 150;
+            const isOver = val >= TARGET;
+            chart.innerHTML += `<div class="bar ${isOver?'goal':''}" style="height:${Math.max(h, 5)}px"><span class="label">${months[i]}</span></div>`;
         });
     }
 
-    window.togglePaid = function(index) {
-        invoices[index].paid = !invoices[index].paid;
-        renderApp();
+    function toggle(i) {
+        data[i].paid = !data[i].paid;
+        draw();
     }
 </script>
 </body>
