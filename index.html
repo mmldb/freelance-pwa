@@ -3,94 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FreeOS - Professional</title>
+    <title>Freelance OS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .paid-shadow { box-shadow: 0 0 20px -5px rgba(34, 197, 94, 0.2); }
-        .pending-shadow { box-shadow: 0 0 20px -5px rgba(99, 102, 241, 0.2); }
-        @keyframes grow { from { height: 0; } to { height: var(--final-height); } }
-        .bar-animate { animation: grow 1s ease-out forwards; }
-    </script>
+        .hidden { display: none !important; }
+        input:focus { border-color: #4f46e5 !important; }
+    </style>
 </head>
 <body class="bg-slate-900 min-h-screen font-sans">
+
     <div id="login-screen" class="flex items-center justify-center min-h-screen p-6">
         <div class="w-full max-w-sm text-center">
             <h1 class="text-4xl font-black italic tracking-tighter text-white mb-8">FREEOS.</h1>
-            <input type="password" id="pass" class="w-full p-5 rounded-3xl bg-slate-800 border border-slate-700 text-white text-center text-2xl outline-none focus:ring-2 focus:ring-indigo-500 mb-4" placeholder="••••">
+            <input type="password" id="pass" class="w-full p-5 rounded-3xl bg-slate-800 border border-slate-700 text-white text-center text-2xl outline-none mb-4" placeholder="••••">
             <button onclick="check()" class="w-full py-5 bg-white text-slate-900 rounded-3xl font-black uppercase tracking-widest shadow-xl active:scale-95 transition-all">Belépés</button>
-            <p id="err" class="text-red-400 text-xs mt-4 hidden font-bold uppercase tracking-widest">Hibás kód</p>
+            <p id="err" class="text-red-400 text-xs mt-4 hidden font-bold">HIBÁS KÓD</p>
         </div>
     </div>
 
-    <div id="main-screen" class="hidden bg-slate-50 min-h-screen w-full pb-12 overflow-y-auto">
-        <div class="max-w-md mx-auto p-4 py-6">
-            
+    <div id="main-screen" class="hidden bg-slate-50 min-h-screen w-full p-4 pb-12 overflow-y-auto">
+        <div class="max-w-md mx-auto py-4">
             <header class="flex justify-between items-center mb-8 px-2">
-                <h2 class="text-2xl font-black italic tracking-tighter text-indigo-900">FREEOS.</h2>
-                <button onclick="logout()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-white px-4 py-2 rounded-full border border-slate-100 shadow-sm">Kilépés</button>
+                <h2 class="text-2xl font-black italic tracking-tighter text-indigo-900 leading-none">FREEOS.</h2>
+                <button onclick="logout()" class="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Kilépés</button>
             </header>
             
-            <div class="grid grid-cols-1 gap-4 mb-8">
+            <div class="space-y-4 mb-8">
+                <div class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Kiállított (Összes)</p>
+                    <p id="total-gross" class="text-3xl font-black text-slate-900">0 Ft</p>
+                </div>
                 <div class="bg-indigo-600 p-6 rounded-[32px] shadow-xl text-white">
-                    <p class="text-indigo-200 text-[10px] font-bold uppercase mb-1 tracking-widest">Bankban / Kivehető (EKHO)</p>
-                    <p id="total-net-display" class="text-3xl font-black tracking-tight">0 Ft</p>
-                    <div class="flex justify-between mt-3 pt-3 border-t border-indigo-500 text-[9px] font-medium text-indigo-200 uppercase">
-                        <span>Adóalap: <b id="tax-base">0</b> Ft</span>
-                        <span>-15% EKHO</span>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
-                        <p class="text-slate-400 text-[9px] font-bold uppercase mb-1 tracking-wider">Összes Bruttó</p>
-                        <p id="total-gross-display" class="text-lg font-black text-slate-800">0 Ft</p>
-                    </div>
-                    <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm border-l-4 border-l-amber-400">
-                        <p class="text-slate-400 text-[9px] font-bold uppercase mb-1 tracking-wider">Várható még</p>
-                        <p id="pending-gross-display" class="text-lg font-black text-amber-500">0 Ft</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm mb-8">
-                <div class="flex justify-between items-center mb-6 px-1">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Trend vs Cél (2M/hó)</p>
-                    <span class="text-[10px] font-black text-green-500 uppercase">+27%</span>
-                </div>
-                <div id="bar-chart" class="flex items-end justify-between h-32 gap-3 px-2 relative border-b border-slate-100 pb-1">
-                    <div class="absolute w-full border-t border-dashed border-slate-200 top-0 left-0 pointer-events-none" style="top: 20%;">
-                        <span class="absolute right-0 -top-4 text-[8px] font-bold text-slate-300">24M CÉL</span>
-                    </div>
-                    </div>
-                <div class="flex justify-between mt-4 text-[10px] font-bold text-slate-300 uppercase px-1">
-                    <span>Jan</span><span>Feb</span><span>Már</span><span>Ápr</span>
+                    <p class="text-indigo-200 text-[10px] font-bold uppercase mb-1 font-medium">Bankban (EKHO Nettó)</p>
+                    <p id="total-net" class="text-3xl font-black">0 Ft</p>
+                    <p class="text-[9px] text-indigo-300 mt-2 font-medium italic">Adók és fixek levonva</p>
                 </div>
             </div>
 
             <div class="mb-8">
-                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 px-3">Számlák állapota</h3>
-                <div id="invoice-list" class="space-y-3 px-1">
-                    </div>
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 px-3">Számlák</h3>
+                <div id="invoice-list" class="space-y-3"></div>
             </div>
 
+            <div class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm">
+                <p class="text-[10px] font-bold text-slate-400 uppercase mb-6 text-center tracking-widest">Trend (Március ugrás)</p>
+                <div id="bar-chart" class="flex items-end justify-between h-24 gap-3 px-2"></div>
+                <div class="flex justify-between mt-4 text-[10px] font-bold text-slate-300 uppercase px-1">
+                    <span>Jan</span><span>Feb</span><span>Már</span><span>Ápr</span>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
         const PASS = "2026FreeLanceD";
         const FIXED_TAX = 150000;
-        const MONTHLY_TARGET = 2000000;
-
         const invoices = [
-            { id: 'E-2026-1', date: '01.29', amount: 3304125, client: 'Future Deluxe' },
-            { id: 'E-2026-2', date: '03.02', amount: 4322200, client: 'Future Deluxe' },
-            { id: 'E-2026-5', date: '03.26', amount: 1706628, client: 'OZ Club Ltd.' },
-            { id: 'E-2026-6', date: '04.02', amount: 843986, client: 'OZ Club Ltd.' }
+            { id: 'E-2026-1', amount: 3304125, label: 'Jan' },
+            { id: 'E-2026-2', amount: 4322200, label: 'Már' },
+            { id: 'E-2026-5', amount: 1706628, label: 'Már' },
+            { id: 'E-2026-6', amount: 843986, label: 'Ápr' }
         ];
 
         function check() {
             if(document.getElementById('pass').value === PASS) {
-                localStorage.setItem('freeos_auth', 'true');
+                localStorage.setItem('f_auth', '1');
                 render();
             } else {
                 document.getElementById('err').classList.remove('hidden');
@@ -98,90 +75,52 @@
         }
 
         function logout() {
-            localStorage.removeItem('freeos_auth');
+            localStorage.clear();
             location.reload();
         }
 
-        function togglePaid(id) {
-            const current = localStorage.getItem('paid_' + id) === 'true';
-            localStorage.setItem('paid_' + id, !current);
+        function toggle(id) {
+            const val = localStorage.getItem('p_' + id) === '1' ? '0' : '1';
+            localStorage.setItem('p_' + id, val);
             render();
         }
 
         function render() {
-            if(localStorage.getItem('freeos_auth') !== 'true') return;
-
+            if(localStorage.getItem('f_auth') !== '1') return;
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('main-screen').classList.remove('hidden');
-            document.body.className = "bg-slate-50 min-h-screen font-sans";
+            document.body.className = "bg-slate-50";
 
-            let totalGross = 0;
-            let totalPaid = 0;
-            let pendingGross = 0;
+            let g = 0; let p = 0;
             const list = document.getElementById('invoice-list');
-            const chart = document.getElementById('bar-chart');
-            
             list.innerHTML = '';
-            chart.innerHTML = '';
+            
+            invoices.forEach(i => {
+                g += i.amount;
+                const isP = localStorage.getItem('p_' + i.id) === '1';
+                if(isP) p += i.amount;
 
-            invoices.forEach((inv) => {
-                totalGross += inv.amount;
-                const isPaid = localStorage.getItem('paid_' + inv.id) === 'true';
-                if(isPaid) totalPaid += inv.amount;
-                else pendingGross += inv.amount;
-
-                const card = document.createElement('div');
-                card.className = `p-5 rounded-[24px] border-2 transition-all flex justify-between items-center ${isPaid ? 'bg-white border-green-50 paid-shadow' : 'bg-white border-slate-50 opacity-70'}`;
-                card.innerHTML = `
-                    <div class="flex-1">
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="text-[10px] font-black text-slate-800">${inv.id}</span>
-                            <span class="text-[8px] font-bold text-slate-300 uppercase tracking-tighter">${inv.client}</span>
-                        </div>
-                        <p class="font-black text-slate-900">${inv.amount.toLocaleString()} Ft</p>
-                    </div>
-                    <button onclick="togglePaid('${inv.id}')" class="w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${isPaid ? 'bg-green-500 text-white shadow-lg shadow-green-100' : 'bg-slate-50 text-slate-200'}">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                    </button>
-                `;
-                list.appendChild(card);
+                const div = document.createElement('div');
+                div.className = `p-4 rounded-3xl border flex justify-between items-center bg-white ${isP ? 'border-green-100 shadow-sm' : 'border-slate-100 opacity-60'}`;
+                div.innerHTML = `<div><p class="text-[9px] font-bold text-slate-400">${i.id}</p><p class="font-bold text-slate-800">${i.amount.toLocaleString()} Ft</p></div><button onclick="toggle('${i.id}')" class="w-10 h-10 rounded-2xl border-2 flex items-center justify-center ${isP ? 'bg-green-500 border-green-500 text-white' : 'border-slate-100 text-slate-200'}">${isP ? '✓' : ''}</button>`;
+                list.appendChild(div);
             });
 
-            // Finances
-            const months = 4;
-            const taxBase = totalPaid - (FIXED_TAX * months);
-            const net = taxBase > 0 ? taxBase * 0.85 : 0;
+            const net = (p - (FIXED_TAX * 4)) * 0.85;
+            document.getElementById('total-gross').innerText = g.toLocaleString() + ' Ft';
+            document.getElementById('total-net').innerText = Math.max(0, Math.floor(net)).toLocaleString() + ' Ft';
 
-            document.getElementById('total-gross-display').innerText = totalGross.toLocaleString() + ' Ft';
-            document.getElementById('pending-gross-display').innerText = pendingGross.toLocaleString() + ' Ft';
-            document.getElementById('total-net-display').innerText = Math.floor(net).toLocaleString() + ' Ft';
-            document.getElementById('tax-base').innerText = Math.max(0, taxBase).toLocaleString();
-
-            // Chart Logic
-            const monthlyData = [
-                { label: 'Jan', val: 3304125 },
-                { label: 'Feb', val: 0 },
-                { label: 'Már', val: 6028828 },
-                { label: 'Ápr', val: 843986 }
-            ];
-            
-            let cumulative = 0;
-            const maxForChart = 12000000; // Skála
-
-            monthlyData.forEach((d) => {
-                cumulative += d.val;
-                const h = (cumulative / maxForChart) * 100;
-                const bar = document.createElement('div');
-                bar.className = "w-full bg-slate-100 rounded-t-xl relative";
-                bar.innerHTML = `
-                    <div class="bg-indigo-500 rounded-t-xl absolute bottom-0 w-full bar-animate shadow-lg shadow-indigo-100" style="--final-height: ${h}%"></div>
-                `;
-                chart.appendChild(bar);
+            const chart = document.getElementById('bar-chart');
+            chart.innerHTML = '';
+            const vals = [3304125, 0, 6028828, 843986];
+            let c = 0;
+            vals.forEach(v => {
+                c += v;
+                const h = (c / 12000000) * 100;
+                chart.innerHTML += `<div class="w-full bg-slate-100 rounded-t-lg relative h-full"><div class="bg-indigo-500 rounded-t-lg absolute bottom-0 w-full" style="height:${h}%"></div></div>`;
             });
         }
-
         render();
-        document.getElementById('pass').addEventListener('keypress', e => { if(e.key === 'Enter') check(); });
     </script>
 </body>
 </html>
